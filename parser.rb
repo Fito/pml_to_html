@@ -1,0 +1,192 @@
+require 'rubygems'
+require 'nokogiri'
+
+class Parser
+  def load(filepath)
+    file = File.open(filepath)
+    @document = Nokogiri::XML(file)
+    file.close
+    
+    @string_document = File.read(filepath).to_s
+  end
+  
+  def document
+    @string_document
+  end
+  
+  def replace_tag(xml_tag, html_tag, html_class)
+    @string_document.gsub!(/<#{xml_tag}>/, "<#{html_tag} class='#{html_class}'>")
+    @string_document.gsub!(/<\/#{xml_tag}>/, "<\/#{html_tag}>")
+    @string_document
+  end
+    
+  def replace_tag_with_attribute(xml_tag, xml_attribute, html_tag, html_class, html_attribute)
+    @document.css(xml_tag).each do |tag|
+      attribute = tag.attributes[xml_attribute]
+      @string_document.gsub!(/<#{xml_tag}\s#{xml_attribute}="(#{attribute})">/, "<#{html_tag} class='#{html_class}' #{html_attribute}='#{attribute}'>")
+      @string_document.gsub!(/<\/#{xml_tag}>/, "<\/#{html_tag}>")
+    end
+    @string_document
+  end
+  
+  def replace_selfclosing_tag_with_attribute(xml_tag, xml_attribute, html_tag, html_class, html_attribute)
+    @document.css(xml_tag).each do |tag|
+      attribute = tag.attributes[xml_attribute]
+      @string_document.gsub!(
+        /<#{xml_tag}\s#{xml_attribute}="(#{attribute})"\s*\/>/, 
+        "<#{html_tag} class='#{html_class}' #{html_attribute}='#{attribute}'>#{attribute}</#{html_tag}>")
+    end
+    @string_document
+  end
+  
+  def replace_selfclosing_tag_with_attributes(xml_tag, xml_attribute_1, xml_attribute_2, html_tag, html_class, html_attribute_1, html_attribute_2)
+    @document.css(xml_tag).each do |tag|
+      attribute_1 = tag.attributes[xml_attribute_1]
+      attribute_2 = tag.attributes[xml_attribute_2]    
+      if attribute_1 && attribute_2
+        @string_document.gsub!(
+          /<#{xml_tag}\s#{xml_attribute_1}="(#{attribute_1})"\s#{xml_attribute_2}="(#{attribute_2})"\/>/, 
+          "<#{html_tag} class='#{html_class}' #{html_attribute_1}='#{attribute_1}' #{html_attribute_2}='#{attribute_2}'>#{attribute_1}</#{html_tag}>")
+      end
+    end
+    @string_document
+  end
+  
+  def change_doctype
+    @string_document.slice!(/<\?xml.*>/)
+    @string_document.gsub!(/<!DOCTYPE\s.*>/, '<!DOCTYPE html>')
+    @string_document
+  end
+  
+  def replace_selfclosing_code
+    replace_selfclosing_tag_with_attributes('code', 'file', 'part', 'a', 'code', 'href', 'part')
+    replace_selfclosing_tag_with_attribute('code', 'file', 'a', 'code', 'href')
+  end
+  
+  def replace_chapter
+    @document.css('chapter').inspect
+    replace_tag_with_attribute('chapter', 'id', 'div', 'chapter', 'id')
+  end
+  
+  def replace_title
+    replace_tag('title', 'h2', 'title')
+  end
+  
+  def replace_footnote
+    replace_tag('footnote', 'span', 'footnote')
+  end
+  
+  def replace_joeasks
+    replace_tag('joeasks', 'div', 'ask_sidebar')
+  end
+  
+  def replace_firstuse
+    replace_tag('firstuse', 'span', 'firstuse')
+  end
+  
+  def replace_ed
+    replace_tag('ed', 'span', 'ed')
+  end
+  
+  def replace_author
+    replace_tag('author', 'span', 'author')
+  end
+  
+  def replace_commandname
+    replace_tag('commandname', 'span', 'commandname')
+  end
+  
+  def replace_method
+    replace_tag('method', 'span', 'method')
+  end
+  
+  def replace_emph
+    replace_tag('emph', 'em', 'emph')
+  end
+  
+  def replace_sidebar
+    replace_tag_with_attribute('sidebar', 'id', 'div', 'sidebar', 'id')
+  end 
+  
+  def replace_ref
+    @document.css('ref').each do |tag|
+      attribute = tag.attributes['linkend']
+      if @string_document.slice(/<ref\n(.*)linkend="(#{attribute})"\/>/)
+        @string_document.gsub!(/<ref\n(.*)linkend="(#{attribute})"\/>/, "<a class='ref' href='#{attribute}'>#{attribute}</a>")
+      elsif @string_document.slice(/<ref\slinkend="(#{attribute})"\/>/)
+        @string_document.gsub!(/<ref\slinkend="(#{attribute})"\/>/, "<a class='ref' href='#{attribute}'>#{attribute}</a>")
+      end
+    end
+    @string_document
+  end 
+
+  def replace_sect1
+    replace_tag_with_attribute('sect1', 'id', 'div', 'sect1', 'id')
+  end
+  
+  def replace_sect2
+    replace_tag_with_attribute('sect2', 'id', 'div', 'sect2', 'id')
+  end
+  
+  def replace_quotes
+    @string_document.gsub!('&lquot','&ldquo')
+    @string_document.gsub!('&rquot','&rdquo')
+    @string_document
+  end
+  
+  def replace_class
+    replace_tag('class', 'span', 'rubyclass')
+  end
+  
+  def replace_ic
+    replace_tag('ic', 'span', 'ic')
+  end
+  
+  def escape_symbols
+    while @string_document.slice(/\#<[a-zA-Z]+:\dx\w+>/) != nil
+      object = @string_document.slice(/\#<[a-zA-Z]+:\dx\w+>/).slice(/[a-zA-Z]+:\dx\w+/)
+      @string_document.gsub!(/\#<[a-zA-Z]+:\dx\w+>/,"#&#060;#{object}&#062;")
+    end
+    @string_document
+  end
+  
+  def replace_constant
+    replace_tag('constant', 'span', 'constant')
+  end
+  
+  def replace_filename
+     replace_tag('filename', 'span', 'filename')
+  end
+  
+  def replace_keyword
+     replace_tag('keyword', 'span', 'keyword')
+  end
+  
+  def replace_all
+    change_doctype
+    replace_constant
+    replace_chapter
+    replace_title
+    replace_footnote
+    replace_joeasks
+    replace_firstuse
+    replace_ed
+    replace_author
+    replace_commandname
+    replace_method
+    replace_emph
+    replace_sidebar
+    replace_filename
+    replace_keyword
+    replace_ref
+    replace_sect1
+    replace_sect2
+    replace_quotes
+    replace_class
+    replace_ic
+    escape_symbols
+    replace_selfclosing_code
+    @string_document
+  end
+   
+end
