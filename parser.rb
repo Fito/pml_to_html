@@ -45,7 +45,7 @@ class Parser
       attribute_2 = tag.attributes[xml_attribute_2]    
       if attribute_1 && attribute_2
         @string_document.gsub!(
-          /<#{xml_tag}\s#{xml_attribute_1}="(#{attribute_1})"\s#{xml_attribute_2}="(#{attribute_2})"\/>/, 
+          /<#{xml_tag}\s#{xml_attribute_1}="(#{attribute_1})"\s+#{xml_attribute_2}="(#{attribute_2})"\/>/, 
           "<#{html_tag} class='#{html_class}' #{html_attribute_1}='#{attribute_1}' #{html_attribute_2}='#{attribute_2}'>#{attribute_1}</#{html_tag}>")
       end
     end
@@ -143,9 +143,14 @@ class Parser
   end
   
   def escape_symbols
-    while @string_document.slice(/\#<[a-zA-Z]+:\dx\w+>/) != nil
-      object = @string_document.slice(/\#<[a-zA-Z]+:\dx\w+>/).slice(/[a-zA-Z]+:\dx\w+/)
-      @string_document.gsub!(/\#<[a-zA-Z]+:\dx\w+>/,"#&#060;#{object}&#062;")
+    while @string_document.slice(/\#<[A-Z]/) != nil
+      if @string_document.slice(/\#<[A-Z]+\S+>/)
+        object = @string_document.slice(/\#<[A-Z]+\S+>/).slice(/[A-Z]+\S+/)
+        @string_document.gsub!(/\#<[A-Z]+\S+>/,"#&#060;#{object}&#062;")
+      elsif @string_document.slice(/#<[A-Z]+[a-z]+\s+/)
+        object = @string_document.slice(/#<[A-Z]+[a-z]+\s+/).slice(/[A-Z]+\S+/)
+        @string_document.gsub!(/#<[A-Z]+[a-z]+\s+/,"#&#060;#{object}")
+      end
     end
     @string_document
   end
@@ -190,7 +195,5 @@ class Parser
   end
    
 end
-
-
 
 
