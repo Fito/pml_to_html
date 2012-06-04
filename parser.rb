@@ -188,12 +188,20 @@ class Parser
   	replace_selfclosing_tag_with_attribute('imagedata', 'fileref', 'img', 'imagedata', 'src')
   end
   
-
   def replace_url
     replace_tag_with_content('url', 'a', 'url', 'href')
-
+  end
+  
   def replace_thead
   	replace_tag('thead', 'tr', 'thead')
+  end
+  
+  def replace_table_headers
+    @document.css('thead').children.css('col').css('p').each do |p|
+      head = p.content
+      @string_document.gsub!(/<col><p>#{head}<\/p><\/col>/, "<th><p>#{head}</p></th>")
+    end
+    @string_document
   end
   
   def replace_all
@@ -228,3 +236,7 @@ class Parser
   end
    
 end
+
+parser = Parser.new
+parser.load("chapter.xml")
+parser.replace_table_headers

@@ -161,6 +161,10 @@ describe Parser do
     @parser.replace_url.should include("</a>")
   end
   
+  # it 'should add referenced external code' do
+  #   @parser.add_external_code.should include("")
+  # end
+  
   it 'should return a string after parsing everything' do
     @parser.replace_all.class.should == String
   end
@@ -182,6 +186,11 @@ describe Parser do
   it 'replaces <thead> with <tr class="thead">' do
     @parser.replace_thead.should include("<tr class='thead'>")
     @parser.replace_thead.should include("</tr>")
+  end
+  
+  it 'replaces <col> inside of <thead> with <th>' do
+    @parser.replace_table_headers.should include("<th>")
+    @parser.replace_table_headers.should include("</th>")
   end
 end 
 
