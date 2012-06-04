@@ -179,6 +179,10 @@ describe Parser do
     @parser.replace_all
   end
   
+  it 'replaces <thead> with <tr class="thead">' do
+    @parser.replace_thead.should include("<tr class='thead'>")
+    @parser.replace_thead.should include("</tr>")
+  end
 end 
 
 
