@@ -172,6 +172,10 @@ class Parser
      replace_tag('keyword', 'span', 'keyword')
   end
   
+  def replace_figure
+  	replace_tag_with_attribute('figure', 'id', 'div', 'figure', 'id')
+  end
+  
   def replace_all
     change_doctype
     replace_constant
