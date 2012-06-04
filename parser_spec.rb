@@ -151,28 +151,34 @@ describe Parser do
   	@parser.replace_imagedata.should include("</img>")
   end
   
+  it 'replaces the selfclosing code tag with <a>' do
+    @parser.replace_selfclosing_code.should include("<a class='code' href='code/full_name/person.rb' part='define_method'>")
+    @parser.replace_selfclosing_code.should include("<a class='code' href=")
+  end
+  
+  it 'replaces <url> with <a href="url">url</a>' do
+    @parser.replace_url.should include("<a class='url' href='http://localhost:3000/my_course'>")
+    @parser.replace_url.should include("</a>")
+  end
+  
+  it 'should return a string after parsing everything' do
+    @parser.replace_all.class.should == String
+  end
+  
   it 'should parse everything' do
     methods = [:change_doctype, :replace_constant, :replace_chapter, :replace_title,
                :replace_footnote, :replace_joeasks, :replace_firstuse, :replace_ed, 
                :replace_author, :replace_commandname, :replace_method, :replace_emph,
                :replace_sidebar, :replace_filename, :replace_keyword, :replace_ref,
                :replace_sect1, :replace_sect2, :replace_sect3, :replace_quotes, :replace_class,
-               :replace_ic, :escape_symbols, :replace_selfclosing_code]
+               :replace_ic, :escape_symbols, :replace_selfclosing_code, :replace_figure, :replace_imagedata]
     
     methods.each do |method|
       @parser.should_receive(method)
     end
     @parser.replace_all
   end
-
-  it 'replaces the selfclosing code tag with <a>' do
-    @parser.replace_selfclosing_code.should include("<a class='code' href='code/full_name/person.rb' part='define_method'>")
-    @parser.replace_selfclosing_code.should include("<a class='code' href=")
-  end
   
-  it 'should return a string after parsing everything' do
-    @parser.replace_all.class.should == String
-  end
 end 
 
 

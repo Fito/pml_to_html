@@ -29,6 +29,14 @@ class Parser
     @string_document
   end
   
+  def replace_tag_with_content(xml_tag, html_tag, html_class, html_attribute)
+    @document.css(xml_tag).each do |tag|
+      content = tag.content
+      @string_document.gsub!(/<#{xml_tag}>#{content}<\/#{xml_tag}>/, "<#{html_tag} class='#{html_class}' #{html_attribute}='#{content}'>#{content}<\/#{html_tag}>")
+    end
+    @string_document
+  end
+  
   def replace_selfclosing_tag_with_attribute(xml_tag, xml_attribute, html_tag, html_class, html_attribute)
     @document.css(xml_tag).each do |tag|
       attribute = tag.attributes[xml_attribute]
@@ -46,7 +54,7 @@ class Parser
       if attribute_1 && attribute_2
         @string_document.gsub!(
           /<#{xml_tag}\s#{xml_attribute_1}="(#{attribute_1})"\s+#{xml_attribute_2}="(#{attribute_2})"\s*\/>/, 
-          "<#{html_tag} class='#{html_class}' #{html_attribute_1}='#{attribute_1}' #{html_attribute_2}='#{attribute_2}'>#{attribute_1}</#{html_tag}>")
+          "<#{html_tag} class='#{html_class}' #{html_attribute_1}='#{attribute_1}' #{html_attribute_2}='#{attribute_2}'></#{html_tag}>")
       end
     end
     @string_document
@@ -180,6 +188,10 @@ class Parser
   	replace_selfclosing_tag_with_attribute('imagedata', 'fileref', 'img', 'imagedata', 'src')
   end
   
+  def replace_url
+    replace_tag_with_content('url', 'a', 'url', 'href')
+  end
+  
   def replace_all
     change_doctype
     replace_constant
@@ -205,10 +217,25 @@ class Parser
     replace_ic
     escape_symbols
     replace_selfclosing_code
+    replace_figure
+    replace_imagedata
+    replace_url
     @string_document
   end
    
 end
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
