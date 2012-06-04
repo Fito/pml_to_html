@@ -64,12 +64,13 @@ class Parser
   end
   
   def replace_chapter
-    @document.css('chapter').inspect
     replace_tag_with_attribute('chapter', 'id', 'div', 'chapter', 'id')
   end
   
   def replace_title
-    replace_tag('title', 'h2', 'title')
+    @string_document.sub!(/<chapter.*>.*\n*\s*<title>/, "<h2 class='chapter_title'>")
+    @string_document.sub!(/<\/title>/, "<\/h2>")
+    replace_tag('title', 'h3', 'title')
   end
   
   def replace_footnote
@@ -200,5 +201,6 @@ class Parser
   end
    
 end
+
 
 

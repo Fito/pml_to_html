@@ -25,9 +25,14 @@ describe Parser do
     @parser.replace_chapter.should include("</div>")
   end
   
-  it 'replaces <title> with <h2 class="title">' do
-    @parser.replace_title.should include("<h2 class='title'>")
+  it 'replaces the first <title> after a <chapter> with <h2 class="chapter_title">' do
+    @parser.replace_title.should include("<h2 class='chapter_title'>")
     @parser.replace_title.should include("</h2>")
+  end
+    
+  it 'replaces <title> with <h3 class="title">' do
+    @parser.replace_title.should include("<h3 class='title'>")
+    @parser.replace_title.should include("</h3>")
   end
   
   it 'replaces <footnote> with <span class="footnote">' do
@@ -44,11 +49,6 @@ describe Parser do
   it 'replaces <firstuse> with <span class="firstuse">' do
     @parser.replace_firstuse.should include("<span class='firstuse'>")
     @parser.replace_firstuse.should include("</span>")
-  end
-  
-  it 'replaces <ed> with <span class="ed">' do
-    @parser.replace_ed.should include("<span class='ed'>")
-    @parser.replace_ed.should include("</span>")
   end
   
   it 'replaces <author> with <span class="author">' do
@@ -135,6 +135,13 @@ describe Parser do
     @parser.replace_keyword.should include("<span class='keyword'>")
     @parser.replace_keyword.should include("</span>")
   end
+  
+  it 'replaces <ed> with <span class="ed">' do
+    @parser.replace_ed.should include("<span class='ed'>")
+    @parser.replace_ed.should include("</span>")
+  end
+  
+  it 'replaces <figure> with <div class="figure" id='some_id'>"
   
   it 'should parse everything' do
     methods = [:change_doctype, :replace_constant, :replace_chapter, :replace_title,
