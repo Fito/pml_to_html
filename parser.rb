@@ -180,6 +180,10 @@ class Parser
   	replace_selfclosing_tag_with_attribute('imagedata', 'fileref', 'img', 'imagedata', 'src')
   end
   
+  def replace_thead
+  	replace_tag('thead', 'tr', 'thead')
+  end
+  
   def replace_all
     change_doctype
     replace_constant
@@ -209,6 +213,5 @@ class Parser
   end
    
 end
-
 
 

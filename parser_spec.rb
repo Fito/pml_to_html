@@ -173,6 +173,13 @@ describe Parser do
   it 'should return a string after parsing everything' do
     @parser.replace_all.class.should == String
   end
+  
+  it 'replaces <thead> with <tr class="thead">' do
+    @parser.replace_thead.should include("<tr class='thead'>")
+    @parser.replace_thead.should include("</tr>")
+  end
+
+  
 end 
 
 
