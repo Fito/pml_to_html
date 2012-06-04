@@ -34,7 +34,7 @@ class Parser
       attribute = tag.attributes[xml_attribute]
       @string_document.gsub!(
         /<#{xml_tag}\s#{xml_attribute}="(#{attribute})"\s*\/>/, 
-        "<#{html_tag} class='#{html_class}' #{html_attribute}='#{attribute}'>#{attribute}</#{html_tag}>")
+        "<#{html_tag} class='#{html_class}' #{html_attribute}='#{attribute}'></#{html_tag}>")
     end
     @string_document
   end
@@ -174,6 +174,10 @@ class Parser
   
   def replace_figure
   	replace_tag_with_attribute('figure', 'id', 'div', 'figure', 'id')
+  end
+  
+  def replace_imagedata
+  	replace_selfclosing_tag_with_attribute('imagedata', 'fileref', 'img', 'imagedata', 'src')
   end
   
   def replace_all
