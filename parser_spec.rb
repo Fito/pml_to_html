@@ -141,7 +141,15 @@ describe Parser do
     @parser.replace_ed.should include("</span>")
   end
   
-  it 'replaces <figure> with <div class="figure" id='some_id'>"
+  it 'replaces <figure> with <div class="figure" id="some_id">' do
+    @parser.replace_figure.should include("<div class='figure' id='fig.routing-error'>")
+    @parser.replace_figure.should include("</div>")
+  end
+  
+  it 'replaces <imagedata fileref="some_file"/> with <img class="imagedata" src="some_file"/>' do
+  	@parser.replace_imagedata.should include("<img class='imagedata' src='images/controllers/missing-courses-controller.png'>")
+  	@parser.replace_imagedata.should include("</img>")
+  end
   
   it 'should parse everything' do
     methods = [:change_doctype, :replace_constant, :replace_chapter, :replace_title,
