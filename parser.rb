@@ -45,7 +45,7 @@ class Parser
       attribute_2 = tag.attributes[xml_attribute_2]    
       if attribute_1 && attribute_2
         @string_document.gsub!(
-          /<#{xml_tag}\s#{xml_attribute_1}="(#{attribute_1})"\s+#{xml_attribute_2}="(#{attribute_2})"\/>/, 
+          /<#{xml_tag}\s#{xml_attribute_1}="(#{attribute_1})"\s+#{xml_attribute_2}="(#{attribute_2})"\s*\/>/, 
           "<#{html_tag} class='#{html_class}' #{html_attribute_1}='#{attribute_1}' #{html_attribute_2}='#{attribute_2}'>#{attribute_1}</#{html_tag}>")
       end
     end
@@ -128,6 +128,10 @@ class Parser
     replace_tag_with_attribute('sect2', 'id', 'div', 'sect2', 'id')
   end
   
+  def replace_sect3
+    replace_tag_with_attribute('sect3', 'id', 'div', 'sect3', 'id')
+  end
+  
   def replace_quotes
     @string_document.gsub!('&lquot','&ldquo')
     @string_document.gsub!('&rquot','&rdquo')
@@ -186,6 +190,7 @@ class Parser
     replace_ref
     replace_sect1
     replace_sect2
+    replace_sect3
     replace_quotes
     replace_class
     replace_ic

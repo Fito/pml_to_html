@@ -91,6 +91,11 @@ describe Parser do
     @parser.replace_sect2.should include("</div>")
   end
   
+  it 'replaces <sect3> with <div class="sect3" id="some_id">' do
+    @parser.replace_sect3.should include("<div class='sect3'")
+    @parser.replace_sect3.should include("</div>")
+  end
+  
   it 'replaces &lquot; with &ldquo;' do
     @parser.replace_quotes.should include('&ldquo;')
   end
@@ -132,17 +137,22 @@ describe Parser do
   end
   
   it 'should parse everything' do
-    [:replace_title, :replace_footnote, :replace_joeasks, :replace_firstuse, :replace_ed, :replace_author, :replace_commandname,
-     :replace_method, :replace_emph, :replace_sidebar, :replace_ref, :replace_sect1, :replace_sect2, :replace_quotes, :replace_class,
-     :replace_ic, :escape_symbols, :replace_constant, :replace_filename, :replace_keyword, :replace_chapter].each do |method|
-       @parser.should_receive(method)
-     end
+    methods = [:change_doctype, :replace_constant, :replace_chapter, :replace_title,
+               :replace_footnote, :replace_joeasks, :replace_firstuse, :replace_ed, 
+               :replace_author, :replace_commandname, :replace_method, :replace_emph,
+               :replace_sidebar, :replace_filename, :replace_keyword, :replace_ref,
+               :replace_sect1, :replace_sect2, :replace_sect3, :replace_quotes, :replace_class,
+               :replace_ic, :escape_symbols, :replace_selfclosing_code]
+    
+    methods.each do |method|
+      @parser.should_receive(method)
+    end
     @parser.replace_all
   end
 
   it 'replaces the selfclosing code tag with <a>' do
     @parser.replace_selfclosing_code.should include("<a class='code' href='code/full_name/person.rb' part='define_method'>")
-    @parser.replace_selfclosing_code.should include("<a class='code' href='code/full_name/person_inheritance.rb'>")
+    @parser.replace_selfclosing_code.should include("<a class='code' href=")
   end
   
   it 'should return a string after parsing everything' do
